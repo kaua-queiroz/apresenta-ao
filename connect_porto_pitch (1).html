@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect Porto - Pitch Profissional</title>
+    
+    <!-- Google Fonts: Montserrat (Impacto/Títulos) e Inter (Leitura) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Configuração de Cores (Azul Marinho, Branco e Azul Elétrico) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-dark': '#07101E', /* Azul mega escuro, estilo palco */
+                        'brand-blue': '#001B3A',
+                        'brand-accent': '#0055FF', /* Azul elétrico para destaques */
+                        'brand-light': '#FFFFFF',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #07101E; /* Evita flash branco */
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        #deck {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: #07101E;
+        }
+
+        /* Estrutura do Slide */
+        .slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-out;
+            transform: scale(0.98);
+            background-color: #FFFFFF; /* Padrão claro */
+            color: #07101E;
+            padding: 3rem;
+            z-index: 1;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+            z-index: 10;
+        }
+
+        /* Tema Escuro para Slides de Impacto */
+        .slide.bg-dark {
+            background-color: #07101E;
+            color: #FFFFFF;
+        }
+
+        /* Tipografia de Palestra (Estilo Joel J) */
+        h1, h2, h3, .font-heading {
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        .text-giant { font-size: clamp(3rem, 7vw, 7rem); font-weight: 900; text-transform: uppercase; }
+        .text-huge { font-size: clamp(2.5rem, 5vw, 5rem); font-weight: 800; }
+        .text-title { font-size: clamp(2rem, 3.5vw, 3.5rem); font-weight: 800; margin-bottom: 1.5rem; text-transform: uppercase;}
+        
+        .accent-text { color: #0055FF; }
+        .bg-dark .accent-text { color: #3377FF; } /* Mais claro no fundo escuro */
+
+        /* Utilitários de Imagem */
+        .img-contain { object-fit: contain; width: 100%; height: 100%; }
+        .img-cover { object-fit: cover; width: 100%; height: 100%; }
+
+        /* Controles de Navegação Transparentes (Estilo Stories) */
+        #nav-left, #nav-right {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 15%;
+            z-index: 50;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        #nav-left { left: 0; }
+        #nav-right { right: 0; width: 85%; /* Área maior para avançar */ }
+        
+        /* Setas Visíveis */
+        .arrow-indicator {
+            width: 50px;
+            height: 50px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: rgba(0,0,0,0.5);
+            transition: all 0.2s;
+        }
+        .bg-dark ~ #nav-left .arrow-indicator, 
+        .bg-dark ~ #nav-right .arrow-indicator {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.5);
+        }
+
+        #nav-left:hover, #nav-right:hover { opacity: 1; }
+        #nav-left:hover .arrow-indicator, #nav-right:hover .arrow-indicator {
+            background: #0055FF; color: white; transform: scale(1.1);
+        }
+
+        /* Barra de Progresso Minimalista */
+        #progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: #0055FF;
+            width: 0%;
+            transition: width 0.3s ease;
+            z-index: 100;
+        }
+
+        /* Tabela Limpa */
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1.2rem; text-align: left; border-bottom: 1px solid #E5E7EB; }
+        th { font-family: 'Montserrat'; text-transform: uppercase; color: #07101E; }
+        .bg-dark th { color: white; border-color: #1F2937; }
+        .bg-dark td { border-color: #1F2937; }
+    </style>
+</head>
+<body>
+
+<div id="deck">
+
+    <!-- 1. CAPA -->
+    <div class="slide bg-dark items-center text-center">
+        <div class="w-full max-w-4xl mx-auto flex flex-col items-center">
+            <!-- Imagem original da logo fornecida -->
+            <img src="image_452f64.png" alt="Connect Porto Logo" class="h-40 mb-12 img-contain filter brightness-0 invert">
+            <h2 class="text-brand-accent font-bold tracking-[0.3em] uppercase mb-4 text-xl">Projeto Integrador</h2>
+            <h1 class="text-giant mb-6">CONNECT PORTO</h1>
+            <div class="w-32 h-2 bg-brand-accent mb-10"></div>
+            <p class="text-2xl text-gray-400 font-medium mb-2">Santos, SP | 2026</p>
+            <p class="text-xl text-white font-bold uppercase tracking-widest">Fundação CENEP Santos</p>
+        </div>
+    </div>
+
+    <!-- 2. FRASE DE IMPACTO -->
+    <div class="slide bg-dark items-center text-center">
+        <div class="w-full max-w-6xl mx-auto">
+            <h1 class="text-huge font-heading leading-tight mb-12">
+                Na Baixada Santista, quase todo jovem sabe que o <span class="accent-text">porto existe</span>.<br>
+                Poucos sabem que ele <span class="accent-text">emprega</span>.
+            </h1>
+            <p class="text-xl text-gray-400 max-w-4xl mx-auto leading-relaxed border-l-4 border-brand-accent pl-6 text-left">
+                Segundo Siebre Neto et al. (2023), na Revista Observatório Portuário, a sociedade da Baixada Santista se conecta ao Porto de Santos apenas de forma superficial: conhece sua existência, mas ignora as reais oportunidades de emprego que o setor gera.
+            </p>
+        </div>
+    </div>
+
+    <!-- 3. DORES (Minimalista) -->
+    <div class="slide">
+        <div class="w-full max-w-7xl mx-auto flex flex-col h-full justify-center">
+            <h2 class="text-title">O Problema</h2>
+            <div class="w-16 h-2 bg-brand-accent mb-12"></div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-10">
+                <div>
+                    <h3 class="text-2xl font-bold mb-2">Invisibilidade</h3>
+                    <p class="text-xl text-gray-600">Maior porto da América Latina, mas invisível para a maioria dos jovens da região.</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold mb-2">Dimensão Ignorada</h3>
+                    <p class="text-xl text-gray-600">Mais de 38 mil vínculos portuários formais só em Santos.</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold mb-2">Diversidade Oculta</h3>
+                    <p class="text-xl text-gray-600">Ampla diversidade de carreiras (operadores, técnicos, agentes, práticos, despachantes, analistas) segue desconhecida.</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold mb-2">Estigma e Descarte</h3>
+                    <p class="text-xl text-gray-600">O jovem descarta o porto cedo: cresce ouvindo que é um trabalho apenas sujo, pesado e braçal.</p>
+                </div>
+            </div>
+            
+            <div class="mt-16 bg-gray-50 border-l-8 border-brand-accent p-8">
+                <h3 class="text-3xl font-heading font-bold">A PERGUNTA REAL:</h3>
+                <p class="text-2xl mt-2">Por que ninguém mostra isso a quem precisa saber?</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. PERSONA -->
+    <div class="slide bg-dark">
+        <div class="w-full max-w-7xl mx-auto flex flex-col md:flex-row h-full items-center gap-12">
+            <div class="w-full md:w-1/2 h-[60vh] bg-gray-800 rounded-xl overflow-hidden relative">
+                <!-- IMAGEM DA PERSONA -->
+                <img src="CONNECT PORTO.jpg" alt="Persona Heitor" class="img-cover opacity-80">
+                <div class="absolute bottom-0 left-0 p-8 bg-gradient-to-t from-[#07101E] to-transparent w-full">
+                    <h2 class="text-4xl font-bold font-heading mb-1">Heitor, 16 anos</h2>
+                    <p class="text-xl text-brand-accent font-bold">Ensino Médio | Cubatão (Vila Esperança)</p>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 flex flex-col justify-center">
+                <h2 class="text-title !mb-6">Público-Alvo</h2>
+                <p class="text-xl text-gray-300 mb-8">Jovens de 15 a 24 anos da Baixada Santista, no ensino médio/técnico. Vivem perto do Porto, mas conhecem pouco suas oportunidades.</p>
+                
+                <ul class="space-y-6 text-lg">
+                    <li class="flex gap-4 items-start">
+                        <div class="w-3 h-3 mt-2 rounded-full bg-brand-accent shrink-0"></div>
+                        <p><strong class="text-white">Dúvida:</strong> Não sabe qual carreira seguir. Dificuldade em achar informação confiável.</p>
+                    </li>
+                    <li class="flex gap-4 items-start">
+                        <div class="w-3 h-3 mt-2 rounded-full bg-brand-accent shrink-0"></div>
+                        <p><strong class="text-white">Dor principal:</strong> Acha o porto sujo e braçal, apesar de vê-lo como bem remunerado.</p>
+                    </li>
+                    <li class="flex gap-4 items-start">
+                        <div class="w-3 h-3 mt-2 rounded-full bg-brand-accent shrink-0"></div>
+                        <p><strong class="text-white">Objetivo:</strong> Descobrir áreas administrativas e se qualificar para uma carreira sólida.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. POR QUE AGORA? -->
+    <div class="slide text-center">
+        <div class="w-full max-w-6xl mx-auto flex flex-col h-full justify-center">
+            <h2 class="text-title">Por que agora?</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mt-12 mb-16">
+                <div class="p-8">
+                    <h3 class="text-7xl font-black font-heading text-brand-accent mb-4">115M</h3>
+                    <p class="text-2xl font-bold uppercase mb-2">Toneladas até 2040</p>
+                    <p class="text-lg text-gray-600">Salto gigantesco projetado pelo Porto de Santos.</p>
+                </div>
+                <div class="p-8">
+                    <h3 class="text-7xl font-black font-heading text-brand-accent mb-4">R$ 1.8 Bi</h3>
+                    <p class="text-2xl font-bold uppercase mb-2">Em Investimentos</p>
+                    <p class="text-lg text-gray-600">Previstos apenas na malha ferroviária interna.</p>
+                </div>
+            </div>
+
+            <ul class="text-left max-w-4xl mx-auto space-y-4 text-xl text-gray-700">
+                <li class="flex gap-4"><span class="text-brand-accent font-bold">›</span> Risco de perda de know-how pela falta de renovação (SWOT).</li>
+                <li class="flex gap-4"><span class="text-brand-accent font-bold">›</span> A geração atual busca vagas via digital, não por "contato".</li>
+                <li class="flex gap-4"><span class="text-brand-accent font-bold">›</span> O modelo antigo está ultrapassado, deixando um vácuo.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 6. POR QUE SANTOS? -->
+    <div class="slide bg-dark">
+        <div class="w-full max-w-6xl mx-auto flex flex-col h-full justify-center">
+            <h2 class="text-title text-brand-accent">E por que Santos?</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                <div class="p-8 border border-white/10 rounded-xl">
+                    <h3 class="text-2xl font-bold mb-4 font-heading">A Barreira é a Imagem</h3>
+                    <p class="text-lg text-gray-400">Pesquisa própria com 65 jovens confirmou: a maior barreira não é a falta de vagas, é o acesso à informação e a imagem do setor.</p>
+                </div>
+                <div class="p-8 border border-white/10 rounded-xl">
+                    <h3 class="text-2xl font-bold mb-4 font-heading">Perto, mas "de fora"</h3>
+                    <p class="text-lg text-gray-400">O Porto é visível na paisagem, mas é tratado como algo inatingível por quem nasceu ao lado dele.</p>
+                </div>
+                <div class="p-8 border border-white/10 rounded-xl md:col-span-2 bg-brand-accent text-white">
+                    <h3 class="text-2xl font-bold mb-4 font-heading">A Estrutura já existe</h3>
+                    <p class="text-xl">CENEP, Etec, Fatec, Navega Jovem. A infraestrutura de ensino está pronta. <strong>Falta apenas a ponte entre esse ecossistema e o jovem.</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. SOLUÇÃO -->
+    <div class="slide text-center">
+        <div class="w-full max-w-6xl mx-auto flex flex-col h-full justify-center items-center">
+            <h3 class="text-2xl text-gray-500 font-bold uppercase tracking-widest mb-2">A Nossa</h3>
+            <h2 class="text-giant text-brand-blue mb-16">SOLUÇÃO</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 text-left w-full">
+                <div class="p-10 bg-gray-50 rounded-2xl">
+                    <h3 class="text-3xl font-bold font-heading text-brand-blue mb-6 border-b-4 border-brand-accent inline-block pb-2">Plataforma Digital</h3>
+                    <p class="text-xl text-gray-600 leading-relaxed">
+                        Vagas do porto e cursos de parceiros (CENEP, Etec) num só lugar. Personalizável por interesse, com alertas e noticiário sobre o cotidiano real.
+                    </p>
+                </div>
+                
+                <div class="p-10 bg-brand-blue text-white rounded-2xl">
+                    <h3 class="text-3xl font-bold font-heading mb-6 border-b-4 border-brand-accent inline-block pb-2">Ativação Presencial</h3>
+                    <p class="text-xl text-gray-300 leading-relaxed">
+                        Palestras em escolas públicas e ETECs a partir do 9º ano. Eventos, oficinas e contato <strong>direto</strong> com profissionais do setor.
+                    </p>
+                </div>
+            </div>
+            
+            <p class="mt-12 text-2xl font-bold text-gray-800">
+                A ativação <span class="text-brand-accent">quebra a barreira</span>. A plataforma <span class="text-brand-accent">sustenta o relacionamento</span>.
+            </p>
+        </div>
+    </div>
+
+    <!-- 8. SOLUÇÃO NA PRÁTICA (SITE & QR) -->
+    <div class="slide bg-dark p-0">
+        <div class="flex flex-col md:flex-row h-full w-full">
+            <div class="w-full md:w-2/5 p-12 flex flex-col justify-center bg-[#07101E]">
+                <h2 class="text-title mb-6">Site Oficial</h2>
+                <p class="text-xl text-gray-400 mb-12">
+                    A plataforma centralizadora. Escaneie o QR Code abaixo para visualizar a proposta de interface.
+                </p>
+                
+                <div class="bg-white p-6 rounded-xl inline-block self-start shadow-2xl">
+                    <!-- IMAGEM QR CODE -->
+                    <img src="Captura de Tela (365)_2.png" alt="QR Code" class="w-48 h-48 object-contain">
+                    <p class="text-center text-brand-blue font-bold mt-4 uppercase text-sm tracking-wider">Acesse agora</p>
+                </div>
+            </div>
+            <div class="w-full md:w-3/5 h-full relative bg-black">
+                <!-- IMAGEM DO SITE (HOME) -->
+                <img src="Captura de Tela (367).jpg" alt="Home do Site" class="img-cover opacity-90 object-top">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#07101E] via-transparent to-transparent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 9. ELAS NO PORTO -->
+    <div class="slide p-0">
+        <div class="flex flex-col md:flex-row h-full w-full">
+            <div class="w-full md:w-1/2 h-full relative bg-gray-200">
+                <!-- IMAGEM ELAS NO PORTO -->
+                <img src="Captura de Tela (366).jpg" alt="Aba Elas no Porto" class="img-cover object-top">
+            </div>
+            <div class="w-full md:w-1/2 p-16 flex flex-col justify-center bg-white">
+                <div class="inline-block px-4 py-1 bg-pink-100 text-pink-700 font-bold rounded-full text-sm uppercase tracking-wider mb-6 self-start">Exclusivo</div>
+                <h2 class="text-title text-brand-blue mb-6">Elas no Porto</h2>
+                <div class="w-16 h-2 bg-brand-accent mb-8"></div>
+                <p class="text-2xl text-gray-600 mb-8 leading-relaxed">
+                    Uma área dedicada a notícias, vagas e oportunidades de carreira <strong>específicas para mulheres</strong>.
+                </p>
+                <ul class="space-y-4 text-xl text-gray-700">
+                    <li class="flex items-center gap-3"><span class="text-brand-accent font-bold">✓</span> Quebra do mito "trabalho masculino".</li>
+                    <li class="flex items-center gap-3"><span class="text-brand-accent font-bold">✓</span> Destaque para lideranças femininas.</li>
+                    <li class="flex items-center gap-3"><span class="text-brand-accent font-bold">✓</span> Inclusão e representatividade real.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 10. INOVAÇÃO -->
+    <div class="slide bg-dark">
+        <div class="w-full max-w-6xl mx-auto flex flex-col h-full justify-center">
+            <h2 class="text-title mb-12 text-center">Inovação e Diferenciais</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white/5 p-8 border-l-4 border-brand-accent">
+                    <h3 class="text-2xl font-bold font-heading mb-3 text-white">Acesso Rápido</h3>
+                    <p class="text-lg text-gray-400">Vagas, cursos e eventos organizados por perfil, sem precisar garimpar em vários sites.</p>
+                </div>
+                <div class="bg-white/5 p-8 border-l-4 border-brand-accent">
+                    <h3 class="text-2xl font-bold font-heading mb-3 text-white">Conexão Real</h3>
+                    <p class="text-lg text-gray-400">Aproxima quem está começando de quem já vive o dia a dia do porto.</p>
+                </div>
+                <div class="bg-white/5 p-8 border-l-4 border-brand-accent">
+                    <h3 class="text-2xl font-bold font-heading mb-3 text-white">Pilar Central</h3>
+                    <p class="text-lg text-gray-400">Levar profissionais até as escolas (a partir do 9º ano), criando contato direto estudante-mercado.</p>
+                </div>
+                <div class="bg-white/5 p-8 border-l-4 border-brand-accent">
+                    <h3 class="text-2xl font-bold font-heading mb-3 text-white">Acessibilidade</h3>
+                    <p class="text-lg text-gray-400">Foco especial em grupos sub-representados através de feiras e ativações.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 11. BENCHMARKING -->
+    <div class="slide">
+        <div class="w-full max-w-6xl mx-auto flex flex-col h-full justify-center">
+            <h2 class="text-title">Benchmarking</h2>
+            
+            <div class="overflow-x-auto bg-white rounded-xl border border-gray-200 mt-8">
+                <table>
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="w-1/2">Funcionalidade / Proposta</th>
+                            <th class="text-center text-brand-accent">Connect Porto</th>
+                            <th class="text-center text-gray-400 font-normal">Outros Portais</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-lg">
+                        <tr>
+                            <td class="font-medium text-gray-800">Centralização (Notícias, Vagas, Cursos)</td>
+                            <td class="text-center font-bold text-brand-accent">SIM</td>
+                            <td class="text-center text-gray-400">Raro</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium text-gray-800">Aba "Elas no Porto"</td>
+                            <td class="text-center font-bold text-brand-accent">SIM</td>
+                            <td class="text-center text-gray-400">Não centralizado</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium text-gray-800">Quebrando Mitos e Estigmas</td>
+                            <td class="text-center font-bold text-brand-accent">SIM</td>
+                            <td class="text-center text-gray-400">Não</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium text-gray-800">Ativação Presencial em Escolas Públicas</td>
+                            <td class="text-center font-bold text-brand-accent">SIM</td>
+                            <td class="text-center text-gray-400">Não</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium text-gray-800">Foco exclusivo no público Jovem</td>
+                            <td class="text-center font-bold text-brand-accent">SIM</td>
+                            <td class="text-center text-gray-400">Não</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 12. ODS -->
+    <div class="slide bg-dark">
+        <div class="w-full max-w-7xl mx-auto flex flex-col h-full justify-center text-center">
+            <h2 class="text-title mb-6">Impactos Sociais (ODS)</h2>
+            <p class="text-xl text-gray-400 mb-12 max-w-4xl mx-auto">Compromisso com 4 Objetivos de Desenvolvimento Sustentável da ONU.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 text-left">
+                <div class="bg-[#c5192d] p-8 text-white rounded-xl">
+                    <h2 class="text-4xl font-black mb-4">4</h2>
+                    <h3 class="font-bold text-xl mb-2">Educação de Qualidade</h3>
+                    <p class="text-sm opacity-90">Profissionais nas escolas: orientação vocacional e técnica acessível.</p>
+                </div>
+                <div class="bg-[#ff3a21] p-8 text-white rounded-xl">
+                    <h2 class="text-4xl font-black mb-4">5</h2>
+                    <h3 class="font-bold text-xl mb-2">Igualdade de Gênero</h3>
+                    <p class="text-sm opacity-90">Democratiza o acesso a um mercado historicamente com poucas mulheres.</p>
+                </div>
+                <div class="bg-[#a21942] p-8 text-white rounded-xl">
+                    <h2 class="text-4xl font-black mb-4">8</h2>
+                    <h3 class="font-bold text-xl mb-2">Trabalho Decente</h3>
+                    <p class="text-sm opacity-90">Conecta jovens a vagas e fomenta empregabilidade local em Santos.</p>
+                </div>
+                <div class="bg-[#dd1367] p-8 text-white rounded-xl">
+                    <h2 class="text-4xl font-black mb-4">10</h2>
+                    <h3 class="font-bold text-xl mb-2">Redução de Desigualdades</h3>
+                    <p class="text-sm opacity-90">Centraliza informações antes restritas apenas a quem já tinha "contatos".</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 13. VIABILIDADE -->
+    <div class="slide">
+        <div class="w-full max-w-5xl mx-auto flex flex-col h-full justify-center text-center">
+            <h2 class="text-title mb-16">Viabilidade do Projeto</h2>
+            
+            <div class="space-y-8 text-left max-w-4xl mx-auto">
+                <div>
+                    <h3 class="text-3xl font-heading font-bold text-brand-blue mb-2"><span class="text-brand-accent mr-3">|</span>Técnica</h3>
+                    <p class="text-xl text-gray-600 pl-6">Tecnologias web consolidadas, com implementação gradual em três etapas.</p>
+                </div>
+                <div>
+                    <h3 class="text-3xl font-heading font-bold text-brand-blue mb-2"><span class="text-brand-accent mr-3">|</span>Jurídica</h3>
+                    <p class="text-xl text-gray-600 pl-6">Conformidade total com LGPD, Marco Civil da Internet, CDC e ECA. DPO designado.</p>
+                </div>
+                <div>
+                    <h3 class="text-3xl font-heading font-bold text-brand-blue mb-2"><span class="text-brand-accent mr-3">|</span>Econômica</h3>
+                    <p class="text-xl text-gray-600 pl-6">Parcerias estratégicas (CENEP, Etecs, Fatecs) que reduzem drasticamente o custo inicial.</p>
+                </div>
+                <div class="bg-gray-100 p-6 rounded-lg mt-8">
+                    <h3 class="text-2xl font-heading font-bold text-brand-blue mb-2">Impacto Esperado:</h3>
+                    <p class="text-lg text-gray-800">Mais conhecimento, mais qualificação, mais representatividade e vínculo real Porto-Cidade.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 14. PRÓXIMOS PASSOS -->
+    <div class="slide bg-dark">
+        <div class="w-full max-w-7xl mx-auto flex flex-col md:flex-row h-full items-center gap-12">
+            <div class="w-full md:w-1/2">
+                <h2 class="text-brand-accent font-bold tracking-[0.2em] uppercase mb-4 text-xl">Visão de Futuro</h2>
+                <h1 class="text-huge font-heading leading-tight mb-8">Próximos<br>Passos</h1>
+                <div class="w-24 h-2 bg-brand-accent mb-8"></div>
+                <p class="text-2xl text-gray-300 leading-relaxed">
+                    Expandir o projeto para <strong class="text-white">outros portos do Brasil</strong>, ampliar escalas e parcerias.
+                </p>
+                <p class="text-2xl text-gray-300 leading-relaxed mt-6">
+                    Tornar as oportunidades cada vez mais acessíveis para a população jovem e sub-representada, trazendo <strong class="text-brand-accent">mudança real</strong> na vida dos usuários.
+                </p>
+            </div>
+            <div class="w-full md:w-1/2 bg-[#001B3A] p-12 rounded-3xl border-l-8 border-brand-accent relative shadow-2xl">
+                <div class="absolute -top-10 -left-6 text-brand-accent text-9xl opacity-30 font-heading leading-none">"</div>
+                <h2 class="text-4xl md:text-5xl font-heading font-black italic text-white leading-tight relative z-10">
+                    O futuro é grandioso e <span class="text-brand-accent">todos fazemos parte</span> da criação dele.
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- 15. CONCLUSÃO -->
+    <div class="slide bg-brand-blue text-white p-0">
+        <div class="w-full h-full flex flex-col justify-center items-center relative overflow-hidden">
+            <!-- Efeitos de Fundo (Glow) -->
+            <div class="absolute -right-40 -top-40 w-96 h-96 bg-brand-accent rounded-full blur-[150px] opacity-30"></div>
+            <div class="absolute -left-40 -bottom-40 w-96 h-96 bg-brand-accent rounded-full blur-[150px] opacity-30"></div>
+            
+            <div class="w-full max-w-7xl mx-auto px-12 relative z-10">
+                <h2 class="text-brand-accent font-bold tracking-[0.2em] uppercase mb-4 text-xl text-center">Resumo</h2>
+                <h1 class="text-huge font-heading text-center mb-16">CONCLUSÃO</h1>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Pilar 1 -->
+                    <div class="bg-white/5 p-8 rounded-2xl backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all">
+                        <div class="w-14 h-14 bg-brand-dark rounded-full flex items-center justify-center text-2xl font-bold mb-6 text-brand-accent border border-brand-accent">1</div>
+                        <h3 class="text-2xl font-heading font-bold mb-4">O Distanciamento</h3>
+                        <p class="text-lg text-gray-300">O Porto está a poucos quilômetros dos jovens, mas segue distante não por falta de vagas, e sim por <strong class="text-white">falta de informação, contato e confiança</strong>.</p>
+                    </div>
+                    
+                    <!-- Pilar 2 -->
+                    <div class="bg-white/5 p-8 rounded-2xl backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all">
+                        <div class="w-14 h-14 bg-brand-dark rounded-full flex items-center justify-center text-2xl font-bold mb-6 text-brand-accent border border-brand-accent">2</div>
+                        <h3 class="text-2xl font-heading font-bold mb-4">A Ponte</h3>
+                        <p class="text-lg text-gray-300">O Connect Porto une <strong class="text-white">plataforma digital e ativação presencial</strong> para fechar essa distância entre a teoria escolar e a prática profissional.</p>
+                    </div>
+                    
+                    <!-- Pilar 3 (Destaque) -->
+                    <div class="bg-brand-dark p-8 rounded-2xl backdrop-blur-sm border-2 border-brand-accent shadow-[0_0_40px_rgba(0,85,255,0.3)] transform md:scale-105">
+                        <div class="w-14 h-14 bg-brand-accent text-white rounded-full flex items-center justify-center text-2xl font-bold mb-6">3</div>
+                        <h3 class="text-2xl font-heading font-bold mb-4 text-white">A Transformação</h3>
+                        <p class="text-lg text-gray-300">Alinhado aos <strong class="text-white">ODS 4, 5, 8 e 10</strong>, nossa solução transforma a informação fragmentada em <strong class="text-brand-accent">oportunidade concreta</strong>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 16. OBRIGADO -->
+    <div class="slide bg-dark text-center items-center">
+        <div class="w-full max-w-5xl mx-auto flex flex-col h-full justify-center items-center">
+            <h1 class="text-giant text-brand-accent mb-16">OBRIGADO.</h1>
+            
+            <h3 class="text-2xl font-bold mb-8 text-gray-400 uppercase tracking-widest">A Equipe</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 text-xl text-white font-medium">
+                <p>Adonis Rodrigues Pinheiro</p>
+                <p>Clara Sousa de Almeida</p>
+                <p>Davi dos Santos Sant'Ana</p>
+                <p>Geovanna da Silva Lima</p>
+                <p>João Emanoel Ribeiro de Araujo</p>
+                <p>Kauã Queiroz Alves</p>
+                <p class="md:col-span-2 mt-4 text-brand-accent">Lorenzo Oliveira Pessis</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controles Transparentes -->
+    <div id="nav-left">
+        <div class="arrow-indicator">‹</div>
+    </div>
+    <div id="nav-right">
+        <!-- Não colocar indicador no meio da tela para não poluir, só na direita -->
+        <div class="arrow-indicator" style="position:absolute; right: 20px;">›</div>
+    </div>
+    <div id="progress"></div>
+
+</div>
+
+<script>
+    // Garantir que roda após o HTML carregar
+    window.onload = () => {
+        const slides = document.querySelectorAll('.slide');
+        const navLeft = document.getElementById('nav-left');
+        const navRight = document.getElementById('nav-right');
+        const progressBar = document.getElementById('progress');
+        
+        let currentSlide = 0;
+        const totalSlides = slides.length;
+
+        function updateDeck() {
+            // Remove active de todos, põe no atual
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            // Atualiza barra de progresso
+            const progressPct = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progressPct}%`;
+        }
+
+        function goNext() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateDeck();
+            }
+        }
+
+        function goPrev() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateDeck();
+            }
+        }
+
+        // Navegação por clique (Telas sensíveis)
+        navRight.addEventListener('click', goNext);
+        navLeft.addEventListener('click', goPrev);
+
+        // Navegação por Teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'Space' || e.key === 'Enter') {
+                goNext();
+            } else if (e.key === 'ArrowLeft') {
+                goPrev();
+            }
+        });
+
+        // Swipe Mobile
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        document.addEventListener('touchend', e => {
+            let touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 50) goNext();
+            if (touchEndX > touchStartX + 50) goPrev();
+        }, {passive: true});
+
+        // Inicializa o primeiro slide
+        updateDeck();
+    };
+
+    // Script de fallback para corrigir espaços e parênteses nas imagens, 
+    // ou manter o design intacto caso o servidor local do preview bloqueie as imagens originais.
+    document.querySelectorAll('img').forEach(img => {
+        img.onerror = function() {
+            const src = this.getAttribute('src');
+            // Tenta codificar a URL uma vez se tiver espaços ou parênteses
+            if (src && (src.includes(' ') || src.includes('('))) {
+                this.onerror = function() {
+                    // Se falhar de novo, coloca uma caixa fallback profissional
+                    aplicarFallbackProfissional(this, src);
+                };
+                this.src = encodeURI(src);
+            } else {
+                aplicarFallbackProfissional(this, src);
+            }
+        };
+    });
+
+    function aplicarFallbackProfissional(imgElement, originalSrc) {
+        imgElement.style.display = 'none';
+        const fallback = document.createElement('div');
+        fallback.className = 'w-full h-full flex flex-col items-center justify-center bg-gray-900 text-gray-500 font-bold border-2 border-dashed border-gray-700 rounded-xl p-4 text-center';
+        fallback.innerHTML = `<span class="text-brand-accent mb-2 text-2xl">🖼️</span><span>Imagem carregada no HTML final</span><span class="text-xs font-normal mt-2 opacity-50">${originalSrc}</span>`;
+        imgElement.parentNode.insertBefore(fallback, imgElement);
+    }
+</script>
+
+</body>
+</html>
